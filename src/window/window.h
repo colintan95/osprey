@@ -7,6 +7,7 @@
 
 namespace window { 
 
+// Created from the WindowManager class.
 class Window {
 public:
   // TODO(colintan): Consider making this private (see abseil lib's WrapUnique) -

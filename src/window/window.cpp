@@ -18,6 +18,8 @@ Window::~Window() {
   if (glfw_window_ != nullptr) {
     glfwDestroyWindow(glfw_window_);
   }
+
+  glfwTerminate();
 }
 
 void Window::Tick() {

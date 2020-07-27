@@ -1,13 +1,15 @@
 #include <iostream>
 
-#include "window/window.h"
+#include "window/window_manager.h"
 
 int main() {
-  window::Window window(1920, 1080, "My Window");
+  window::WindowManager window_manager;
 
-  while (!window.ShouldClose()) {
-    window.Tick();
-    window.SwapBuffers();
+  window::Window* window = window_manager.CreateWindow(1920, 1080, "My Window");
+
+  while (!window->ShouldClose()) {
+    window->Tick();
+    window->SwapBuffers();
   }
   
   return 0;

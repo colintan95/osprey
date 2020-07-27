@@ -35,10 +35,6 @@ add_library(stb INTERFACE IMPORTED)
 set_property(TARGET stb PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     "${CMAKE_SOURCE_DIR}/third_party/stb")
 
-# Add googletest
-add_subdirectory("third_party/googletest")
-set(GTEST_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/third_party/googletest/googletest/include")
-
 enable_testing()
 
 set(SRC_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")

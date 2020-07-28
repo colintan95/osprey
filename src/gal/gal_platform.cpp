@@ -246,7 +246,35 @@ GALPlatform::GALPlatform(window::Window* window) {
 }
 
 GALPlatform::~GALPlatform() {
-  
+  // TODO(colintan): Should this be here?
+  vkDeviceWaitIdle(vk_device_);
+
+  for (size_t i = 0; i < kMaxFramesInFlight; ++i) {
+    vkDestroyFence(vk_device_, vk_in_flight_fences_[i], nullptr);
+    vkDestroySemaphore(vk_device_, vk_render_finished_semaphores_[i], nullptr);
+    vkDestroySemaphore(vk_device_, vk_image_available_semaphores_[i], nullptr);
+  }
+
+  vkDestroyCommandPool(vk_device_, vk_command_pool_, nullptr);
+
+  for (VkImageView image_view : vk_swapchain_image_views_) {
+    vkDestroyImageView(vk_device_, image_view, nullptr);
+  }
+
+  vkDestroySwapchainKHR(vk_device_, vk_swapchain_, nullptr);
+
+  vkDestroyDevice(vk_device_, nullptr);
+
+  vkDestroySurfaceKHR(vk_instance_, vk_surface_, nullptr);
+
+  auto destroy_debug_utils_messenger_func = 
+      (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(vk_instance_, 
+          "vkDestroyDebugUtilsMessengerEXT");
+  if (destroy_debug_utils_messenger_func != nullptr) {
+    destroy_debug_utils_messenger_func(vk_instance_, vk_debug_messenger_, nullptr);
+  }
+
+  vkDestroyInstance(vk_instance_, nullptr);
 }
 
 std::optional<GALPlatform::PhysicalDeviceInfo> GALPlatform::ChoosePhysicalDevice() {

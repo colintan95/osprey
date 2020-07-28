@@ -15,6 +15,10 @@ public:
 
 private:
   window::Window* window_;
+
+  VkInstance vk_instance_;
+  VkDebugUtilsMessengerEXT vk_debug_messenger_;
+  VkSurfaceKHR vk_surface_;
 };
 
 } // namespace gal

@@ -1,6 +1,8 @@
 #include "gal/gal_platform.h"
 
 #include <iostream>
+#include <optional>
+#include <vector>
 
 namespace gal {
 
@@ -18,8 +20,12 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 
 } // namespace
 
-GALPlatform::GALPlatform(window::Window* window)
-  : window_(window) {
+GALPlatform::GALPlatform(window::Window* window) {
+  if (window == nullptr) {
+    throw Exception("window parameter cannot be nullptr.");
+  }
+  window_ = window;
+
   VkApplicationInfo app_info = {};
   app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
   app_info.apiVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -38,6 +44,38 @@ GALPlatform::GALPlatform(window::Window* window)
 
   uint32_t glfw_extension_count = 0;
   const char** glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extension_count);
+
+  std::vector<const char*> extensions(glfw_extensions, glfw_extensions + glfw_extension_count);
+  extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+
+  std::vector<const char*> validation_layers;
+  validation_layers.push_back("VK_LAYER_KHRONOS_validation");
+
+  VkInstanceCreateInfo instance_create_info = {};
+  instance_create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+  instance_create_info.pNext = &debug_create_info;
+  instance_create_info.pApplicationInfo = &app_info;
+  instance_create_info.enabledLayerCount = validation_layers.size();
+  instance_create_info.ppEnabledLayerNames = validation_layers.data();
+  instance_create_info.enabledExtensionCount = extensions.size();
+  instance_create_info.ppEnabledExtensionNames = extensions.data();
+
+  if (vkCreateInstance(&instance_create_info, nullptr, &vk_instance_) != VK_SUCCESS) {
+    throw Exception("Could not create VkInstance.");
+  }
+
+  auto create_debug_utils_messenger_func = 
+      (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(
+            vk_instance_, "vkCreateDebugUtilsMessengerEXT");
+  if (create_debug_utils_messenger_func == nullptr) {
+    throw Exception("Could not find create debug utils messenger func.");
+  }
+  if (create_debug_utils_messenger_func(
+        vk_instance_, &debug_create_info, nullptr, &vk_debug_messenger_) != VK_SUCCESS) {
+    throw Exception("Could not create debug utils messenger.");
+  }
+
+  vk_surface_ = window->CreateVkSurface(vk_instance_);
 }
 
 GALPlatform::~GALPlatform() {

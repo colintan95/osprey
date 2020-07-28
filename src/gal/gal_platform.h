@@ -3,6 +3,7 @@
 
 #include <vulkan/vulkan.h>
 
+#include <cstdint>
 #include <optional>
 #include <vector>
 #include "gal/gal_exception.h"
@@ -14,6 +15,9 @@ class GALPlatform {
 public:
   GALPlatform(window::Window* window);
   ~GALPlatform();
+
+  void StartTick();
+  void EndTick();
 
 private:
   struct PhysicalDeviceInfo {
@@ -52,6 +56,9 @@ private:
   std::vector<VkSemaphore> vk_render_finished_semaphores_;
   std::vector<VkFence> vk_in_flight_fences_;
   std::vector<VkFence> vk_images_in_flight_;
+
+  uint32_t current_image_index_ = 0;
+  uint32_t current_frame_ = 0;
 };
 
 } // namespace gal

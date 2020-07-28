@@ -277,6 +277,25 @@ GALPlatform::~GALPlatform() {
   vkDestroyInstance(vk_instance_, nullptr);
 }
 
+void GALPlatform::StartTick() {
+  vkWaitForFences(vk_device_, 1, &vk_in_flight_fences_[current_frame_], VK_TRUE, UINT64_MAX);
+
+  vkAcquireNextImageKHR(vk_device_, vk_swapchain_, UINT64_MAX, 
+                        vk_image_available_semaphores_[current_frame_], VK_NULL_HANDLE, 
+                        &current_image_index_);
+
+  if (vk_images_in_flight_[current_image_index_] != VK_NULL_HANDLE) {
+    vkWaitForFences(vk_device_, 1, &vk_images_in_flight_[current_image_index_], VK_TRUE, 
+                    UINT64_MAX);
+  }
+
+  vk_images_in_flight_[current_image_index_] = vk_in_flight_fences_[current_frame_];
+}
+
+void GALPlatform::EndTick() {
+  current_frame_ = (current_frame_ + 1) % kMaxFramesInFlight;
+}
+
 std::optional<GALPlatform::PhysicalDeviceInfo> GALPlatform::ChoosePhysicalDevice() {
   uint32_t physical_devices_count = 0;
   vkEnumeratePhysicalDevices(vk_instance_, &physical_devices_count, nullptr);

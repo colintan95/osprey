@@ -6,7 +6,7 @@ namespace window {
 
 WindowManager::WindowManager() {
   if (!glfwInit()) {
-    // TODO(colintan): Throw an exception
+    throw Exception("Failed to initialize GLFW.");
   }
 }
 

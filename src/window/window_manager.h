@@ -1,6 +1,7 @@
 #ifndef WINDOW_WINDOW_MANAGER_H_
 #define WINDOW_WINDOW_MANAGER_H_
 
+#include <exception>
 #include <memory>
 #include <string>
 #include "window/window.h"

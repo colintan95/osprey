@@ -4,13 +4,11 @@ project(osprey)
 set(CMAKE_CXX_STANDARD 17)
 
 # Vulkan
-if(GFXAPI_VK)
-  find_package(Vulkan)
-  if(Vulkan_FOUND)
-    message(STATUS "Found Vulkan")
-  else()
-    message(FATAL_ERROR "Unable to find Vulkan")
-  endif()
+find_package(Vulkan)
+if(Vulkan_FOUND)
+  message(STATUS "Found Vulkan")
+else()
+  message(FATAL_ERROR "Unable to find Vulkan")
 endif()
 
 # GLFW

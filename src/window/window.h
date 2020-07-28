@@ -1,11 +1,22 @@
 #ifndef WINDOW_WINDOW_H_
 #define WINDOW_WINDOW_H_
 
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
 
 #include <string>
 
 namespace window { 
+
+class Exception : public std::exception {
+public:
+  Exception(const std::string msg) : msg_(msg) {}
+  const char* what() const final { return msg_.c_str(); }
+
+private:
+  std::string msg_;
+};
 
 // Created from the WindowManager class.
 class Window {
@@ -20,6 +31,8 @@ public:
   void SwapBuffers();
 
   bool ShouldClose();
+
+  VkSurfaceKHR CreateVkSurface(VkInstance vk_instance);
 
   int GetWidth() const { return width_; }
   int GetHeight() const { return height_; }

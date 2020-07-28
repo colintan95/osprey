@@ -2,6 +2,7 @@ add_executable(gfx_engine
     "main.cpp")
 
 target_link_libraries(gfx_engine PRIVATE glfw)
+target_link_libraries(gfx_engine PRIVATE Vulkan::Vulkan)
 
 # So that source files can specify the full path to header files.
 # e.g. 

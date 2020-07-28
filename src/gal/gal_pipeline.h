@@ -4,7 +4,11 @@
 namespace gal {
 
 class GALPipeline {
+public:
+  GALPipeline();
+  ~GALPipeline();
 
+private:
 };
 
 } // namespace gal

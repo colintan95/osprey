@@ -19,6 +19,8 @@ public:
   void StartTick();
   void EndTick();
 
+  VkDevice GetVkDevice() { return vk_device_; }
+
 private:
   struct PhysicalDeviceInfo {
     uint32_t graphics_queue_family_index;

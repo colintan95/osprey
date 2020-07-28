@@ -4,4 +4,6 @@ target_sources(gfx_engine
     "gal_pipeline.cpp"
     "gal_pipeline.h"
     "gal_platform.cpp"
-    "gal_platform.h")
+    "gal_platform.h"
+    "gal_shader.cpp"
+    "gal_shader.h")

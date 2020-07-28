@@ -22,6 +22,10 @@ private:
 
   std::optional<PhysicalDeviceInfo> ChoosePhysicalDevice();
 
+  VkSurfaceFormatKHR ChooseSurfaceFormat();
+  VkPresentModeKHR ChoosePresentMode();
+  VkExtent2D ChooseSwapExtent();
+
 private:
   window::Window* window_;
 
@@ -30,6 +34,9 @@ private:
   VkSurfaceKHR vk_surface_;
 
   VkPhysicalDevice vk_physical_device_;
+  VkDevice vk_device_;
+  VkQueue vk_graphics_queue_;
+  VkQueue vk_present_queue_;
 };
 
 } // namespace gal

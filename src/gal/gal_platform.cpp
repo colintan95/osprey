@@ -23,6 +23,8 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
   return VK_FALSE;
 }
 
+const int kMaxFramesInFlight = 2;
+
 } // namespace
 
 GALPlatform::GALPlatform(window::Window* window) {
@@ -158,6 +160,88 @@ GALPlatform::GALPlatform(window::Window* window) {
     swapchain_create_info.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
     swapchain_create_info.queueFamilyIndexCount = 0;
     swapchain_create_info.pQueueFamilyIndices = nullptr;
+  }
+
+  swapchain_create_info.preTransform = surface_capabilities.currentTransform;
+  swapchain_create_info.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+  swapchain_create_info.presentMode = present_mode;
+  swapchain_create_info.clipped = VK_TRUE;
+  swapchain_create_info.oldSwapchain = VK_NULL_HANDLE;
+
+  if (vkCreateSwapchainKHR(vk_device_, &swapchain_create_info, nullptr, &vk_swapchain_) 
+          != VK_SUCCESS) {
+    throw Exception("Could not create VkSwapchain.");
+  }
+
+  uint32_t image_count = 0;
+  vkGetSwapchainImagesKHR(vk_device_, vk_swapchain_, &image_count, nullptr);
+
+  vk_swapchain_images_.resize(image_count);
+  vkGetSwapchainImagesKHR(vk_device_, vk_swapchain_, &image_count, vk_swapchain_images_.data());
+
+  vk_swapchain_image_format_ = surface_format.format;
+  vk_swapchain_extent_ = extent;
+
+  vk_swapchain_image_views_.resize(image_count);
+
+  for (size_t i = 0; i < vk_swapchain_images_.size(); ++i) {
+    VkImageViewCreateInfo image_view_create_info{};
+    image_view_create_info.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    image_view_create_info.image = vk_swapchain_images_[i];
+    image_view_create_info.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    image_view_create_info.format = vk_swapchain_image_format_;
+    image_view_create_info.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+    image_view_create_info.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+    image_view_create_info.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+    image_view_create_info.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+    image_view_create_info.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    image_view_create_info.subresourceRange.baseMipLevel = 0;
+    image_view_create_info.subresourceRange.levelCount = 1;
+    image_view_create_info.subresourceRange.baseArrayLayer = 0;
+    image_view_create_info.subresourceRange.layerCount = 1;
+
+    if (vkCreateImageView(vk_device_, &image_view_create_info, nullptr, 
+            &vk_swapchain_image_views_[i]) != VK_SUCCESS) {
+      throw Exception("Could not create image view for swapchain image.");
+    }
+  }
+
+  VkCommandPoolCreateInfo command_pool_create_info{};
+  command_pool_create_info.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+  command_pool_create_info.queueFamilyIndex = graphics_queue_family_index;
+
+  if (vkCreateCommandPool(vk_device_, &command_pool_create_info, nullptr,
+                          &vk_command_pool_) != VK_SUCCESS) {
+    throw Exception("Could not create command pool.");
+  }
+
+  vk_image_available_semaphores_.resize(kMaxFramesInFlight);
+  vk_render_finished_semaphores_.resize(kMaxFramesInFlight);
+  vk_in_flight_fences_.resize(kMaxFramesInFlight);
+  vk_images_in_flight_.resize(vk_swapchain_images_.size(), VK_NULL_HANDLE);
+
+  VkSemaphoreCreateInfo semaphore_create_info{};
+  semaphore_create_info.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+  VkFenceCreateInfo fence_create_info{};
+  fence_create_info.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+  fence_create_info.flags = VK_FENCE_CREATE_SIGNALED_BIT;
+
+  for (size_t i = 0; i < kMaxFramesInFlight; ++i) {
+    if (vkCreateSemaphore(vk_device_, &semaphore_create_info, nullptr,
+                          &vk_image_available_semaphores_[i]) != VK_SUCCESS) {
+      throw Exception("Could not create semaphore.");
+    }
+
+    if (vkCreateSemaphore(vk_device_, &semaphore_create_info, nullptr,
+                          &vk_render_finished_semaphores_[i]) != VK_SUCCESS) {
+      throw Exception("Could not create semaphore.");
+    }
+
+    if (vkCreateFence(vk_device_, &fence_create_info, nullptr, &vk_in_flight_fences_[i]) 
+            != VK_SUCCESS) {
+      throw Exception("Could not create fence." );
+    }
   }
 }
 

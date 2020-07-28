@@ -1,0 +1,7 @@
+target_sources(gfx_engine
+  PRIVATE
+    "gal_exception.h"
+    "gal_pipeline.cpp"
+    "gal_pipeline.h"
+    "gal_platform.cpp"
+    "gal_platform.h")

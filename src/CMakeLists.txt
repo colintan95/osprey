@@ -13,4 +13,5 @@ target_link_libraries(gfx_engine PRIVATE Vulkan::Vulkan)
 #
 target_include_directories(gfx_engine PRIVATE "${SRC_INCLUDE_DIRS}")
 
+add_subdirectory(gal)
 add_subdirectory(window)

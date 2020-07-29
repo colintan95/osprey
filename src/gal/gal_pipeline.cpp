@@ -237,6 +237,17 @@ GALPipeline::GALPipeline(GALPipeline::Builder& builder) {
   }
 }
 
+GALPipeline::~GALPipeline() {
+  for (VkFramebuffer framebuffer : vk_framebuffers_) {
+    vkDestroyFramebuffer(vk_device_, framebuffer, nullptr);
+  }
+
+  vkDestroyPipeline(vk_device_, vk_pipeline_, nullptr);
+  vkDestroyRenderPass(vk_device_, vk_render_pass_, nullptr);
+  vkDestroyPipelineLayout(vk_device_, vk_pipeline_layout_, nullptr);
+  vkDestroyDescriptorSetLayout(vk_device_, vk_descriptor_set_layout_, nullptr);
+}
+
 GALPipeline::Builder& GALPipeline::Builder::SetShader(ShaderType type, const GALShader& shader) {
   switch (type) {
   case ShaderType::Vertex:

@@ -15,5 +15,14 @@ target_link_libraries(gfx_engine PRIVATE Vulkan::Vulkan)
 #
 target_include_directories(gfx_engine PRIVATE "${SRC_INCLUDE_DIRS}")
 
+# TODO(colintan): Don't do this
+# In the binary folder, create a symlink to the assets folder
+add_custom_command(TARGET gfx_engine POST_BUILD COMMAND ${CMAKE_COMMAND}
+    -E create_symlink "${CMAKE_SOURCE_DIR}/assets" 
+    "$<TARGET_FILE_DIR:gfx_engine>/assets")
+add_custom_command(TARGET gfx_engine POST_BUILD COMMAND ${CMAKE_COMMAND}
+    -E create_symlink "${CMAKE_BINARY_DIR}/shaders" 
+    "$<TARGET_FILE_DIR:gfx_engine>/shaders")
+
 add_subdirectory(gal)
 add_subdirectory(window)

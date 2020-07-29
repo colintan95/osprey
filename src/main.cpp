@@ -1,16 +1,8 @@
-#include <iostream>
-
-#include "window/window_manager.h"
+#include "app.h"
 
 int main() {
-  window::WindowManager window_manager;
-
-  window::Window* window = window_manager.CreateWindow(1920, 1080, "My Window");
-
-  while (!window->ShouldClose()) {
-    window->Tick();
-    window->SwapBuffers();
-  }
+  App app;
+  app.MainLoop();
   
   return 0;
 }

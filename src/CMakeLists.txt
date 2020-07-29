@@ -1,4 +1,6 @@
 add_executable(gfx_engine
+    "app.cpp"
+    "app.h"
     "main.cpp")
 
 target_link_libraries(gfx_engine PRIVATE glfw)

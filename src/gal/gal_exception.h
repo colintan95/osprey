@@ -17,4 +17,4 @@ private:
 
 } // namespace gal
 
-#endif GAL_GAL_EXCEPTION_H_
+#endif // GAL_GAL_EXCEPTION_H_

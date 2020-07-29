@@ -65,4 +65,4 @@ private:
 
 } // namespace gal
 
-#endif GAL_GAL_PLATFORM_H_
+#endif // GAL_GAL_PLATFORM_H_

@@ -13,4 +13,4 @@ private:
 
 } // namespace gal
 
-#endif GAL_GAL_PIPELINE_H_
+#endif // GAL_GAL_PIPELINE_H_

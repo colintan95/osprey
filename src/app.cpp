@@ -4,12 +4,15 @@
 #include <fstream>
 #include <memory>
 #include <vector>
+#include "gal/gal_shader.h"
 #include "window/window.h"
 #include "window/window_manager.h"
 
 App::App() {
   window_manager_ = std::make_unique<window::WindowManager>();
   window_ = window_manager_->CreateWindow(1920, 1080, "My Window");
+
+  gal_platform_ = std::make_unique<gal::GALPlatform>(window_);
 
   // TODO(colintan): Make this into a separate class
   std::ifstream vert_shader_file("shaders/triangle_vert.spv", std::ios::ate | std::ios::binary);
@@ -33,6 +36,18 @@ App::App() {
 
   std::vector<std::byte> frag_shader_binary(frag_shader_file_size);
   frag_shader_file.read(reinterpret_cast<char*>(frag_shader_binary.data()), frag_shader_file_size);
+
+  gal::GALShader vert_shader;
+  if (!vert_shader.CreateFromBinary(gal_platform_.get(), gal::ShaderType::Vertex, 
+                                    vert_shader_binary)) {
+    throw;
+  }
+
+  gal::GALShader frag_shader;
+  if (!frag_shader.CreateFromBinary(gal_platform_.get(), gal::ShaderType::Fragment, 
+                                    frag_shader_binary)) {
+    throw;
+  }
 }
 
 App::~App() {

@@ -11,13 +11,16 @@
 namespace gal {
 
 class GALPipeline {
-
 // Forward declaration
 class Builder;
 
 public:
   GALPipeline(Builder& builder);
   ~GALPipeline();
+
+  static Builder BeginBuild(GALPlatform* gal_platform) {
+    return Builder(gal_platform);
+  }
 
 public:
   struct Viewport {

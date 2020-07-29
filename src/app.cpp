@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include "gal/gal_shader.h"
+#include "gal/gal_pipeline.h"
 #include "window/window.h"
 #include "window/window_manager.h"
 
@@ -46,6 +47,47 @@ App::App() {
   gal::GALShader frag_shader;
   if (!frag_shader.CreateFromBinary(gal_platform_.get(), gal::ShaderType::Fragment, 
                                     frag_shader_binary)) {
+    throw;
+  }
+
+  gal::GALPipeline::Viewport viewport;
+  viewport.x = 0;
+  viewport.y = 0;
+  viewport.width = window_->GetWidth();
+  viewport.height = window_->GetHeight();
+
+  // gal::GALPipeline::VertexInput vert_input;
+  // vert_input.buffer_idx = 0;
+  // vert_input.stride = sizeof(Vertex);
+
+  // gal::GALPipeline::VertexDesc pos_desc;
+  // pos_desc.buffer_idx = 0;
+  // pos_desc.shader_idx = 0;
+  // pos_desc.num_components = 2;
+  // pos_desc.offset = 0;
+
+  // gal::GALPipeline::VertexDesc color_desc;
+  // color_desc.buffer_idx = 0;
+  // color_desc.shader_idx = 1;
+  // color_desc.num_components = 3;
+  // color_desc.offset = 2 * sizeof(float);
+
+  // gal::GALPipeline::UniformDesc uniform_desc;
+  // uniform_desc.shader_idx = 0;
+  // uniform_desc.shader_stage = gal::ShaderType::Vertex;
+  
+  try {
+    gal_pipeline_ = gal::GALPipeline::BeginBuild(gal_platform_.get())
+        .SetShader(gal::ShaderType::Vertex, vert_shader)
+        .SetShader(gal::ShaderType::Fragment, frag_shader)
+        .SetViewport(viewport)
+        // .AddVertexInput(vert_input)
+        // .AddVertexDesc(pos_desc)
+        // .AddVertexDesc(color_desc)
+        // .AddUniformDesc(uniform_desc)
+        .Create();
+  } catch (gal::Exception& e) {
+    std::cerr << e.what() << std::endl;
     throw;
   }
 }

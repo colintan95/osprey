@@ -20,6 +20,11 @@ public:
   void EndTick();
 
   VkDevice GetVkDevice() { return vk_device_; }
+  const VkExtent2D& GetVkSwapchainExtent() const { return vk_swapchain_extent_; }
+  const VkFormat& GetVkSwapchainImageFormat() const { return vk_swapchain_image_format_; }
+  const std::vector<VkImageView>& GetSwapchainImageViews() const {
+    return vk_swapchain_image_views_;
+  }
 
 private:
   struct PhysicalDeviceInfo {

@@ -1,6 +1,8 @@
 #ifndef GAL_GAL_PIPELINE_H_
 #define GAL_GAL_PIPELINE_H_
 
+#include <vulkan/vulkan.h>
+
 #include <memory>
 #include <vector>
 #include "gal/gal_platform.h"
@@ -68,6 +70,16 @@ public:
     std::vector<VertexDesc> vert_descs_;
     std::vector<UniformDesc> uniform_descs_;
   };
+
+private:
+  VkDescriptorSetLayout vk_descriptor_set_layout_;
+  VkPipelineLayout vk_pipeline_layout_;
+  VkRenderPass vk_render_pass_;
+  VkPipeline vk_pipeline_;
+
+  std::vector<VkFramebuffer> vk_framebuffers_;
+
+  VkDevice vk_device_;
 };
 
 } // namespace gal

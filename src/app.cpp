@@ -1,5 +1,7 @@
 #include "app.h"
 
+#include <glm/glm.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <memory>
@@ -8,6 +10,15 @@
 #include "gal/gal_pipeline.h"
 #include "window/window.h"
 #include "window/window_manager.h"
+
+namespace {
+
+struct Vertex {
+  glm::vec2 pos;
+  glm::vec3 color;
+};
+
+} // namespace
 
 App::App() {
   window_manager_ = std::make_unique<window::WindowManager>();
@@ -56,35 +67,35 @@ App::App() {
   viewport.width = window_->GetWidth();
   viewport.height = window_->GetHeight();
 
-  // gal::GALPipeline::VertexInput vert_input;
-  // vert_input.buffer_idx = 0;
-  // vert_input.stride = sizeof(Vertex);
+  gal::GALPipeline::VertexInput vert_input;
+  vert_input.buffer_idx = 0;
+  vert_input.stride = sizeof(Vertex);
 
-  // gal::GALPipeline::VertexDesc pos_desc;
-  // pos_desc.buffer_idx = 0;
-  // pos_desc.shader_idx = 0;
-  // pos_desc.num_components = 2;
-  // pos_desc.offset = 0;
+  gal::GALPipeline::VertexDesc pos_desc;
+  pos_desc.buffer_idx = 0;
+  pos_desc.shader_idx = 0;
+  pos_desc.num_components = 2;
+  pos_desc.offset = 0;
 
-  // gal::GALPipeline::VertexDesc color_desc;
-  // color_desc.buffer_idx = 0;
-  // color_desc.shader_idx = 1;
-  // color_desc.num_components = 3;
-  // color_desc.offset = 2 * sizeof(float);
+  gal::GALPipeline::VertexDesc color_desc;
+  color_desc.buffer_idx = 0;
+  color_desc.shader_idx = 1;
+  color_desc.num_components = 3;
+  color_desc.offset = 2 * sizeof(float);
 
-  // gal::GALPipeline::UniformDesc uniform_desc;
-  // uniform_desc.shader_idx = 0;
-  // uniform_desc.shader_stage = gal::ShaderType::Vertex;
+  gal::GALPipeline::UniformDesc uniform_desc;
+  uniform_desc.shader_idx = 0;
+  uniform_desc.shader_stage = gal::ShaderType::Vertex;
   
   try {
     gal_pipeline_ = gal::GALPipeline::BeginBuild(gal_platform_.get())
         .SetShader(gal::ShaderType::Vertex, vert_shader)
         .SetShader(gal::ShaderType::Fragment, frag_shader)
         .SetViewport(viewport)
-        // .AddVertexInput(vert_input)
-        // .AddVertexDesc(pos_desc)
-        // .AddVertexDesc(color_desc)
-        // .AddUniformDesc(uniform_desc)
+        .AddVertexInput(vert_input)
+        .AddVertexDesc(pos_desc)
+        .AddVertexDesc(color_desc)
+        .AddUniformDesc(uniform_desc)
         .Create();
   } catch (gal::Exception& e) {
     std::cerr << e.what() << std::endl;

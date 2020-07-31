@@ -19,12 +19,15 @@ public:
   void StartTick();
   void EndTick();
 
+  VkPhysicalDevice GetVkPhysicalDevice() { return vk_physical_device_; }
   VkDevice GetVkDevice() { return vk_device_; }
   const VkExtent2D& GetVkSwapchainExtent() const { return vk_swapchain_extent_; }
   const VkFormat& GetVkSwapchainImageFormat() const { return vk_swapchain_image_format_; }
   const std::vector<VkImageView>& GetSwapchainImageViews() const {
     return vk_swapchain_image_views_;
   }
+  VkCommandPool GetVkCommandPool() { return vk_command_pool_; }
+  VkQueue GetVkGraphicsQueue() { return vk_graphics_queue_; }
 
 private:
   struct PhysicalDeviceInfo {

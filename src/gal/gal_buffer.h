@@ -1,7 +1,10 @@
 #ifndef GAL_GAL_BUFFER_H_
 #define GAL_GAL_BUFFER_H_
 
+#include <vulkan/vulkan.h>
+
 #include <memory>
+#include <optional>
 #include "gal/gal_platform.h"
 
 namespace gal {
@@ -41,6 +44,21 @@ public:
     uint8_t* data_;
     size_t data_size_;
   };
+
+private:
+  struct BufferInfo {
+    VkBuffer vk_buffer;
+    VkDeviceMemory vk_buffer_memory;
+  };
+
+  std::optional<BufferInfo> CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, 
+                                         VkMemoryPropertyFlags properties);
+
+private:
+  VkPhysicalDevice vk_physical_device_;
+  VkDevice vk_device_;
+  VkBuffer vk_buffer_;
+  VkDeviceMemory vk_buffer_memory_;
 };
 
 } // namespace gal

@@ -101,6 +101,23 @@ App::App() {
     std::cerr << e.what() << std::endl;
     throw;
   }
+
+  std::vector<Vertex> vertices = {
+    {{0.f, -0.5f}, {1.f, 0.f, 0.f}},
+    {{0.5f, 0.5f}, {0.f, 1.f, 0.f}},
+    {{-0.5f, 0.5f,}, {0.f, 0.f, 1.f}}
+  };
+
+  try {
+    vert_buffer_ = gal::GALBuffer::BeginBuild(gal_platform_.get())
+        .SetType(gal::BufferType::Vertex)
+        .SetBufferData(reinterpret_cast<uint8_t*>(vertices.data()), 
+                       sizeof(Vertex) * vertices.size())
+        .Create();
+  } catch (gal::Exception& e) {
+    std::cerr << e.what() << std::endl;
+    throw;
+  }
 }
 
 App::~App() {

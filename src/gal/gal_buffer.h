@@ -1,6 +1,7 @@
 #ifndef GAL_GAL_BUFFER_H_
 #define GAL_GAL_BUFFER_H_
 
+#include <memory>
 #include "gal/gal_platform.h"
 
 namespace gal {
@@ -30,6 +31,8 @@ public:
 
     Builder& SetType(BufferType type);
     Builder& SetBufferData(uint8_t* data, size_t size);
+
+    std::unique_ptr<GALBuffer> Create();
 
   private:
     GALPlatform* gal_platform_; 

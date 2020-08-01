@@ -10,6 +10,7 @@
 #include "gal/gal_commands.h"
 #include "gal/gal_shader.h"
 #include "gal/gal_pipeline.h"
+#include "gal/gal_platform.h"
 #include "window/window.h"
 #include "window/window_manager.h"
 
@@ -163,6 +164,10 @@ void App::MainLoop() {
 }
 
 void App::Frame() {
+  gal_platform_->StartTick();
+  gal_platform_->ExecuteCommandBuffer(command_buffer_.get());
+  gal_platform_->EndTick();
+
   window_->Tick();
   window_->SwapBuffers();
 }

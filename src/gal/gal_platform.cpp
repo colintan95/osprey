@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "gal/gal_command_buffer.h"
 #include "gal/gal_exception.h"
 #include "window/window.h"
 
@@ -294,6 +295,44 @@ void GALPlatform::StartTick() {
 
 void GALPlatform::EndTick() {
   current_frame_ = (current_frame_ + 1) % kMaxFramesInFlight;
+}
+
+bool GALPlatform::ExecuteCommandBuffer(GALCommandBuffer* command_buffer) {
+  VkSemaphore wait_semaphores[] = { vk_image_available_semaphores_[current_frame_] };
+  VkSemaphore signal_semaphores[] = { vk_render_finished_semaphores_[current_frame_] };
+  VkPipelineStageFlags wait_stages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+
+  VkSubmitInfo submit_info{};
+  submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+  submit_info.waitSemaphoreCount = 1;
+  submit_info.pWaitSemaphores = wait_semaphores;
+  submit_info.pWaitDstStageMask = wait_stages;
+  submit_info.commandBufferCount = 1;
+  submit_info.pCommandBuffers = 
+      &(command_buffer->GetVkCommandBuffers()[current_image_index_]);
+  submit_info.signalSemaphoreCount = 1;
+  submit_info.pSignalSemaphores = signal_semaphores;
+
+  vkResetFences(vk_device_, 1, &vk_in_flight_fences_[current_frame_]);
+
+  if (vkQueueSubmit(vk_graphics_queue_, 1, &submit_info, vk_in_flight_fences_[current_frame_]) 
+          != VK_SUCCESS) {
+    return false;
+  }
+
+  VkSwapchainKHR swapchains[] = { vk_swapchain_ };
+
+  VkPresentInfoKHR present_info{};
+  present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+  present_info.waitSemaphoreCount = 1;
+  present_info.pWaitSemaphores = signal_semaphores;
+  present_info.swapchainCount = 1;
+  present_info.pSwapchains = swapchains;
+  present_info.pImageIndices = &current_image_index_;
+
+  vkQueuePresentKHR(vk_present_queue_, &present_info);
+
+  return true;
 }
 
 std::optional<GALPlatform::PhysicalDeviceInfo> GALPlatform::ChoosePhysicalDevice() {

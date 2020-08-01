@@ -11,6 +11,9 @@
 
 namespace gal {
 
+// Forward declaration
+class GALCommandBuffer;
+
 class GALPlatform {
 public:
   GALPlatform(window::Window* window);
@@ -18,6 +21,8 @@ public:
 
   void StartTick();
   void EndTick();
+
+  bool ExecuteCommandBuffer(GALCommandBuffer* command_buffer);
 
   VkPhysicalDevice GetVkPhysicalDevice() { return vk_physical_device_; }
   VkDevice GetVkDevice() { return vk_device_; }

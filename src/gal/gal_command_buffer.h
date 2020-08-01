@@ -22,6 +22,8 @@ public:
 
   void SubmitCommand(const CommandVariant& command_variant);
 
+  const std::vector<VkCommandBuffer>& GetVkCommandBuffers() { return vk_command_buffers_; }
+
 private:
   GALPlatform* gal_platform_;
 

@@ -6,6 +6,8 @@
 #include <fstream>
 #include <memory>
 #include <vector>
+#include "gal/gal_command_buffer.h"
+#include "gal/gal_commands.h"
 #include "gal/gal_shader.h"
 #include "gal/gal_pipeline.h"
 #include "window/window.h"
@@ -116,6 +118,36 @@ App::App() {
         .Create();
   } catch (gal::Exception& e) {
     std::cerr << e.what() << std::endl;
+    throw;
+  }
+
+  try {
+    command_buffer_ = std::make_unique<gal::GALCommandBuffer>(gal_platform_.get());
+  } catch (gal::Exception& e) {
+    std::cerr << e.what() << std::endl;
+    throw;
+  }
+
+  if (!command_buffer_->BeginRecording()) {
+    std::cerr << "Command buffer could not begin recording." << std::endl;
+    throw;
+  }
+
+  gal::command::SetPipeline set_pipeline;
+  set_pipeline.pipeline = gal_pipeline_.get();
+  command_buffer_->SubmitCommand(set_pipeline);
+
+  gal::command::SetVertexBuffer set_vert_buf;
+  set_vert_buf.buffer = vert_buffer_.get();
+  set_vert_buf.buffer_idx = 0;
+  command_buffer_->SubmitCommand(set_vert_buf);
+
+  gal::command::DrawTriangles draw_triangles;
+  draw_triangles.num_triangles = 1;
+  command_buffer_->SubmitCommand(draw_triangles);
+
+  if (!command_buffer_->EndRecording()) {
+    std::cerr << "Command buffer could not end recording." << std::endl;
     throw;
   }
 }

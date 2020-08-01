@@ -22,6 +22,20 @@ public:
     return Builder(gal_platform);
   }
 
+  VkRenderPass GetVkRenderPass() { return vk_render_pass_; }
+  const std::vector<VkFramebuffer>& GetVkFramebuffers() { return vk_framebuffers_; }
+  VkPipeline GetVkPipeline() { return vk_pipeline_; }
+
+private:
+  VkDescriptorSetLayout vk_descriptor_set_layout_;
+  VkPipelineLayout vk_pipeline_layout_;
+  VkRenderPass vk_render_pass_;
+  VkPipeline vk_pipeline_;
+
+  std::vector<VkFramebuffer> vk_framebuffers_;
+
+  VkDevice vk_device_;
+
 public:
   struct Viewport {
     float x = 0.f;
@@ -73,16 +87,6 @@ public:
     std::vector<VertexDesc> vert_descs_;
     std::vector<UniformDesc> uniform_descs_;
   };
-
-private:
-  VkDescriptorSetLayout vk_descriptor_set_layout_;
-  VkPipelineLayout vk_pipeline_layout_;
-  VkRenderPass vk_render_pass_;
-  VkPipeline vk_pipeline_;
-
-  std::vector<VkFramebuffer> vk_framebuffers_;
-
-  VkDevice vk_device_;
 };
 
 } // namespace gal

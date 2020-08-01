@@ -26,6 +26,24 @@ public:
     return Builder(gal_platform);
   }
 
+  VkBuffer GetVkBuffer() { return vk_buffer_; }
+
+private:
+  struct BufferInfo {
+    VkBuffer vk_buffer;
+    VkDeviceMemory vk_buffer_memory;
+  };
+
+  std::optional<BufferInfo> CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, 
+                                         VkMemoryPropertyFlags properties);
+
+private:
+  VkPhysicalDevice vk_physical_device_;
+  VkDevice vk_device_;
+  VkBuffer vk_buffer_;
+  VkDeviceMemory vk_buffer_memory_;
+
+public:
   class Builder {
   friend class GALBuffer;
 
@@ -45,20 +63,6 @@ public:
     size_t data_size_;
   };
 
-private:
-  struct BufferInfo {
-    VkBuffer vk_buffer;
-    VkDeviceMemory vk_buffer_memory;
-  };
-
-  std::optional<BufferInfo> CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, 
-                                         VkMemoryPropertyFlags properties);
-
-private:
-  VkPhysicalDevice vk_physical_device_;
-  VkDevice vk_device_;
-  VkBuffer vk_buffer_;
-  VkDeviceMemory vk_buffer_memory_;
 };
 
 } // namespace gal
